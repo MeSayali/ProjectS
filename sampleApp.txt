@@ -1,0 +1,127 @@
+
+
+
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.util.*;
+class MyFrame extends JFrame implements ActionListener,Runnable
+{
+    private JPanel p1,p2;
+    private JButton b1,b2;
+    private JLabel lbl;
+    private JProgressBar jpb;
+    private Canvas cnv;
+    private Graphics gr;
+    private Thread t;
+
+	public MyFrame()
+	{
+      p1=new JPanel();
+      p1.setLayout(new GridLayout(1,2));
+
+      b1=new JButton("START");
+      p1.add(b1);
+      b1.addActionListener(this);
+
+      b2=new JButton("PAUSE");
+      p1.add(b2);
+      b2.addActionListener(this);
+
+      this.add(p1,BorderLayout.NORTH);
+
+      cnv=new Canvas();
+      this.add(cnv,BorderLayout.CENTER);
+
+      p2=new JPanel();
+      p2.setLayout(new GridLayout(2,1));
+
+      lbl=new JLabel("0%",JLabel.CENTER);
+      p2.add(lbl);
+
+      jpb=new JProgressBar(SwingConstants.HORIZONTAL,0,100);
+      jpb.setForeground(Color.GREEN);
+      p2.add(jpb);
+      this.add(p2,BorderLayout.SOUTH);
+
+      this.setVisible(true);
+      this.setSize(500,400);
+      this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+	}
+	@Override
+	public void actionPerformed(ActionEvent e)
+	{
+
+		String text=e.getActionCommand();
+
+		if(text.equals("PAUSE"))
+			b2.setText("RESUME");
+		else
+		if(text.equals("RESUME"))
+			b2.setText("PAUSE");
+
+		switch(text)
+		{
+
+		case"START":
+			t=new Thread(this);
+			t.start();
+			break;
+
+		case"PAUSE":
+			t.suspend();
+			break;
+		case"RESUME":
+			t.resume();
+			break;
+
+		}
+	}
+	@Override
+	public void run()
+	{
+		try
+		{
+               
+         gr=cnv.getGraphics();
+         Random obj=new Random();
+         for(int i=1;i<=100;i++)
+         {
+         Float r=obj.nextFloat();
+         Float g=obj.nextFloat();
+         Float b=obj.nextFloat();
+
+         Color clr=new Color(r,g,b);
+         gr.setColor(clr);
+
+         int x=obj.nextInt(450);
+         int y=obj.nextInt(400);
+         int w=obj.nextInt(50);
+         
+         gr.fillOval(x,y,w,w);
+         jpb.setValue(i);
+
+         Long v=Math.round(jpb.getPercentComplete()*100);
+         lbl.setText(v+"%");
+         Thread.sleep(200);
+        }
+
+		}
+		catch(Exception ex)
+		{
+			JOptionPane.showMessageDialog(this,ex);
+
+		}
+	}
+
+}
+
+
+
+class Sample
+{
+	public static void main(String[] args) 
+	{
+		new MyFrame();
+	}
+}
